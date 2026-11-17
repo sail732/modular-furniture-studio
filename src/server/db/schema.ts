@@ -156,6 +156,12 @@ export const designTemplates = pgTable(
       "design_templates_width_range",
       sql`${t.minWidthUm} > 0 AND ${t.minWidthUm} <= ${t.defaultWidthUm} AND ${t.defaultWidthUm} <= ${t.maxWidthUm}`,
     ),
+    // Widths are offered only in fixed steps, so the range and the standard
+    // size must sit exactly on the step grid (business decision 10).
+    check(
+      "design_templates_width_on_step",
+      sql`(${t.maxWidthUm} - ${t.minWidthUm}) % ${t.widthIncrementUm} = 0 AND (${t.defaultWidthUm} - ${t.minWidthUm}) % ${t.widthIncrementUm} = 0`,
+    ),
     check(
       "design_templates_dimensions_positive",
       sql`${t.defaultHeightUm} > 0 AND ${t.defaultDepthUm} > 0 AND ${t.widthIncrementUm} > 0`,

@@ -6,7 +6,20 @@
 
 - Per-design width range and increment (`design_templates.min_width_um`, `max_width_um`, `width_increment_um`), displayed on product pages. They are informational: nothing can be configured yet.
 - Unit conversion in `src/lib/units.ts`. `inchesToUm` throws on values it cannot represent exactly instead of rounding them.
-- A database CHECK that keeps each design's default width inside its range.
+- Database CHECKs that keep each design's default width inside its range and on its step grid.
+- `allowedWidths`, `isAllowedWidth` and `nearestAllowedWidths` in `src/lib/width-options.ts`, with tests. Not yet called by any write path, because nothing can be configured or saved yet.
+
+## Dimension model (confirmed)
+
+Confirmed by the business owner on 2026-11-16:
+
+- **Width** is the only dimension a customer can change, and only in fixed steps between a design's minimum and maximum.
+- **Height and depth** are fixed for each design. To get a different height or depth, the customer picks a different design or product.
+- There are no made-to-measure sizes in the first release.
+
+A width is allowed when `min ≤ width ≤ max` and `(width − min)` is an exact multiple of the step. `src/lib/width-options.ts` implements this (`allowedWidths`, `isAllowedWidth`, `nearestAllowedWidths`) and is the only place that rule is written. The database guarantees every design's range and standard width sit on the step grid, and product pages list the exact widths.
+
+What this simplifies in Phase 2: the configurator shows a pick-list of widths rather than a free-text field; a request for height or depth is rejected with a message pointing to other designs; modules need a fixed set of widths, not continuous ranges.
 
 ## Requirements for Phase 2 (from the spec)
 

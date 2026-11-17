@@ -1,0 +1,1 @@
+ALTER TABLE "design_templates" ADD CONSTRAINT "design_templates_width_on_step" CHECK (("design_templates"."max_width_um" - "design_templates"."min_width_um") % "design_templates"."width_increment_um" = 0 AND ("design_templates"."default_width_um" - "design_templates"."min_width_um") % "design_templates"."width_increment_um" = 0);

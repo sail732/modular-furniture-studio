@@ -24,6 +24,8 @@ Decisions made so far, the reason for each, and what is still open. Nothing unde
 | D16 | Policy pages exist as clearly marked drafts with no policy text | Spec: draft until legally reviewed; writing plausible legal text would be inventing terms | Replace with reviewed text |
 | D17 | Width filter matches a product when any published design can be built at a width inside the band | Matches what a shopper means by "fits a 60-inch wall" | Yes |
 | D18 | Node.js 22 minimum | Current LTS; required by test tooling | Yes |
+| D19 | **Width is the only customer-adjustable dimension, in fixed steps. Height and depth are fixed per design. No made-to-measure sizes in release 1.** Confirmed by the business owner on 2026-11-16 (business decision 10) | Keeps every configuration buildable from standard parts | Costly after Phase 2 |
+| D20 | The database rejects a design whose width range or standard width is off its step grid; `src/lib/width-options.ts` is the single definition of "allowed width" | Makes D19 a rule the system enforces, not a convention | Yes |
 
 ## Assumptions in the sample catalog
 
@@ -46,7 +48,7 @@ Numbered as in spec Part XIII. "Blocks" is the first phase that cannot be finish
 | 7 | Packaging and parcel vs freight | Phase 3 shipping estimate; Phase 6 packing lists |
 | 8 | Hardware system and instruction format | Phase 2 rules; Phase 6 |
 | 9 | Returns, damage, warranty, replacement parts | Phase 4 checkout terms; legal pages |
-| 10 | Made-to-measure dimensions in release 1? | **Phase 2**: decides fixed sizes vs ranges for modules |
+| 10 | Made-to-measure dimensions in release 1? | **Decided: no.** Width in fixed steps only; height and depth fixed per design (D19) |
 | 11 | Payment provider, tax and shipping integrations | Phase 4 |
 | 12 | Brand name, identity, photography | Launch |
 | 13 | Manufacturing tolerances and engineering review | Phase 6 "production-ready" status |
@@ -54,6 +56,6 @@ Numbered as in spec Part XIII. "Blocks" is the first phase that cannot be finish
 
 ## Questions for review now
 
-1. **Decision 10** is the one that shapes Phase 2. Current assumption: width varies in fixed steps per design; height and depth are fixed per design. Confirm or correct.
+1. ~~Decision 10~~ Answered: see D19.
 2. Checkout for the MVP: Stripe test-mode checkout, or an order-request (inquiry) flow with no payment? The spec allows either.
 3. Hosting preference, if any (affects auth and storage choices in Phase 4 and 5).

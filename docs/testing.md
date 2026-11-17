@@ -14,19 +14,19 @@ End-to-end tests start a production server on port 3100 and need a browser (`npx
 
 | Layer | Tool | Where | Covers |
 | --- | --- | --- | --- |
-| Unit | Vitest | `src/**/*.test.ts` | Unit conversion and formatting, money formatting, filter parsing (including hostile input), illustration layout schema |
+| Unit | Vitest | `src/**/*.test.ts` | Allowed-width rule (fixed steps), unit conversion and formatting, money formatting, filter parsing (including hostile input), illustration layout schema |
 | Integration | Vitest + in-memory PGlite | `tests/integration` | Migrations apply; seed is idempotent; catalog queries, filters, sorting, search; draft and hidden content never returned; database constraints reject bad rows |
 | End-to-end | Playwright, three viewports (desktop 1280, tablet 820, mobile Pixel 7) | `tests/e2e` | Browse home → category → product; search empty state; filters; design and finish selection; 404s; navigation including the mobile menu; one `h1`, a title and no horizontal overflow on key pages; `noindex` on sample catalogs |
 
 Integration tests run against real PostgreSQL semantics, so constraint and SQL behaviour is the same as production.
 
-## Last run (end of Phase 1)
+## Last run (after the width-rule change)
 
 | Check | Result |
 | --- | --- |
 | `tsc --noEmit` | pass |
 | `eslint` | pass, no warnings |
-| Vitest | 33 passed in 5 files |
+| Vitest | 38 passed in 6 files |
 | `next build` | pass |
 | Playwright | 24 passed (8 scenarios × 3 viewports) |
 

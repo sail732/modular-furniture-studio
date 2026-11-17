@@ -192,6 +192,12 @@ describe("visibility and integrity", () => {
     await expect(
       db.insert(designTemplates).values({ ...template, basePriceCents: 1, minWidthUm: 200 }),
     ).rejects.toThrow();
+    // Width range and standard width must sit on the step grid.
+    const onGrid = { ...template, basePriceCents: 1, minWidthUm: 100, maxWidthUm: 160, defaultWidthUm: 120, widthIncrementUm: 20 };
+    await expect(db.insert(designTemplates).values({ ...onGrid, maxWidthUm: 150, defaultWidthUm: 100 })).rejects.toThrow();
+    await expect(db.insert(designTemplates).values({ ...onGrid, defaultWidthUm: 130 })).rejects.toThrow();
+    await db.insert(designTemplates).values(onGrid);
+    await db.delete(designTemplates).where(eq(designTemplates.code, "TPL-BAD"));
     const [finish] = await db.select().from(finishes).limit(1);
     await expect(
       db.insert(finishes).values({ materialId: finish.materialId, code: "FIN-BAD", name: "Bad", swatchHex: "red    " }),

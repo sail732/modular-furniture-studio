@@ -32,6 +32,10 @@ Role checks are enforced on the server. A customer must never reach admin or man
 7. No fake payment success, fabricated trust badges, unsupported product claims, or placeholder content presented as real.
 8. Cut lists are not called production-ready until a qualified manufacturing professional has reviewed the rules.
 
+## Dimension rule (confirmed)
+
+Customers can change width only, in fixed steps within each design's range. Height and depth are fixed per design. No made-to-measure sizes in the first release.
+
 ## MVP boundary
 
 In: responsive storefront; at least three categories with a small curated catalog; a few designs per category; standard modules and components; controlled dimension and compatibility rules; live 2D preview; server-validated price; cart and saved configurations; admin catalog management; test checkout or a clearly separate order-request flow; basic order management; BOM CSV export.

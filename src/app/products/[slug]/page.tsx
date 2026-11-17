@@ -6,6 +6,7 @@ import { Elevation } from "@/components/furniture/elevation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Price } from "@/components/ui/price";
 import { SampleTag } from "@/components/ui/sample-tag";
+import { allowedWidths } from "@/lib/width-options";
 import { formatDimensions, formatLength } from "@/lib/units";
 import { getDb } from "@/server/db/client";
 import { getProductBySlug, listRelatedProducts } from "@/server/catalog/queries";
@@ -252,8 +253,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
                         </span>
                       </td>
                       <td className="py-3">
-                        {formatLength(t.minWidthUm)} to {formatLength(t.maxWidthUm)}
-                        <span className="block text-sm text-ink-soft">in {formatLength(t.widthIncrementUm)} steps</span>
+                        {allowedWidths(t).map((w) => formatLength(w)).join(", ")}
+                        <span className="block text-sm text-ink-soft">{formatLength(t.widthIncrementUm)} steps</span>
                       </td>
                     </tr>
                   ))}
@@ -261,8 +262,9 @@ export default async function ProductPage({ params, searchParams }: Props) {
               </table>
             </div>
             <p className="mt-3 text-sm text-ink-soft">
-              Selected: {template.name.split(":")[0]}, {formatDimensions(size)}. Height and depth are fixed for
-              each design.
+              Selected: {template.name.split(":")[0]}, {formatDimensions(size)}. Width is the only
+              dimension you can change, and only to the widths listed. Height and depth are fixed for each
+              design.
             </p>
           </section>
 

@@ -8,6 +8,13 @@
       "when": 1794831758353,
       "tag": "0000_phase1_catalog",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794888123170,
+      "tag": "0001_width_on_step",
+      "breakpoints": true
     }
   ]
 }

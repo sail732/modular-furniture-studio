@@ -66,4 +66,4 @@ Scope: components, modules and template-module arrangement; versioned templates 
 
 Likely to change: `src/server/db/schema.ts` and a new migration; `src/server/db/seed*.ts`; new `src/server/configuration/`; new `src/app/configure/`; `src/components/furniture/elevation.tsx` (driven by modules instead of `preview_layout`); the "Next step" panel on product pages; `docs/configuration-engine.md`, `docs/data-model.md`.
 
-Needs first: an answer on business decision 10 (fixed steps vs made-to-measure).
+Business decision 10 is answered (width in fixed steps only; height and depth fixed per design), so Phase 2 is unblocked.

@@ -68,7 +68,9 @@ Indexes: unique on every slug/code; `products(category_id, status)`; `design_tem
 Two Phase 1 fields are deliberately temporary and will move in Phase 2:
 
 - `design_templates.preview_layout` is an illustrative bay layout. It will be derived from the template's modules.
-- Width range and increment on `design_templates` become rows in `dimension_constraints` (covering height and depth too).
+- Width range and increment on `design_templates` may move to `dimension_constraints` rows. Height and depth stay as fixed columns: they are not configurable (D19).
+
+A CHECK constraint (`design_templates_width_on_step`) requires `max_width - min_width` and `default_width - min_width` to be exact multiples of the increment, so every design's allowed widths are a clean list.
 
 ## Planned model
 
@@ -129,5 +131,5 @@ Two mechanisms, used together:
 
 ### Open modeling questions for Phase 2
 
-- Are module widths a fixed set per module, or a range with an increment? (Depends on business decision 10, made-to-measure.)
+- ~~Are module widths a fixed set or a range?~~ Decided (D19): a design's overall width moves in fixed steps; height and depth are fixed per design. Consequence for Phase 2: each module comes in a fixed set of widths, and a width step is realised by swapping or resizing modules to the next size in that set, never by an arbitrary dimension. `dimension_constraints` therefore only needs to describe width.
 - Are compatibility rules expressible as a small set of typed rule kinds (`requires`, `excludes`, `fits_within`, `max_total`), or is a general expression language needed? Proposal: start with typed kinds stored as rows with JSON parameters.
