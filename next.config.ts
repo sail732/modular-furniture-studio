@@ -8,8 +8,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Self-contained server bundle (.next/standalone) for container hosting.
+  output: "standalone",
   // PGlite ships WASM assets that must be loaded from node_modules at runtime.
   serverExternalPackages: ["@electric-sql/pglite"],
+  // ...and those assets are read with fs, so tracing must be told to copy them.
+  outputFileTracingIncludes: {
+    "/**": ["./node_modules/@electric-sql/pglite/dist/**"],
+  },
   poweredByHeader: false,
   turbopack: {
     rules: {

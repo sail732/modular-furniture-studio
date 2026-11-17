@@ -38,6 +38,10 @@ PGlite allows one process at a time. Stop the dev server before running `db:migr
 
 Playwright needs a browser: `npx playwright install chromium`, or set `PW_CHANNEL=chrome` to use an installed Chrome.
 
+## Hosting
+
+A `Dockerfile` is included for Google Cloud Run. See [`docs/deployment.md`](docs/deployment.md) for the one-command preview deploy and its limits.
+
 ## Layout
 
 ```

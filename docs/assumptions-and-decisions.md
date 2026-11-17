@@ -25,6 +25,7 @@ Decisions made so far, the reason for each, and what is still open. Nothing unde
 | D17 | Width filter matches a product when any published design can be built at a width inside the band | Matches what a shopper means by "fits a 60-inch wall" | Yes |
 | D18 | Node.js 22 minimum | Current LTS; required by test tooling | Yes |
 | D19 | **Width is the only customer-adjustable dimension, in fixed steps. Height and depth are fixed per design. No made-to-measure sizes in release 1.** Confirmed by the business owner on 2026-11-16 (business decision 10) | Keeps every configuration buildable from standard parts | Costly after Phase 2 |
+| D21 | First hosted preview targets Google Cloud Run, with the sample catalog baked into the image on embedded PGlite (requested by the business owner 2026-11-16) | Runs within Cloud Run's free allowance with no database service; acceptable only while the site is read-only | Yes: set `DATABASE_URL` and rebuild without the baked database |
 | D20 | The database rejects a design whose width range or standard width is off its step grid; `src/lib/width-options.ts` is the single definition of "allowed width" | Makes D19 a rule the system enforces, not a convention | Yes |
 
 ## Assumptions in the sample catalog
@@ -58,4 +59,4 @@ Numbered as in spec Part XIII. "Blocks" is the first phase that cannot be finish
 
 1. ~~Decision 10~~ Answered: see D19.
 2. Checkout for the MVP: Stripe test-mode checkout, or an order-request (inquiry) flow with no payment? The spec allows either.
-3. Hosting preference, if any (affects auth and storage choices in Phase 4 and 5).
+3. ~~Hosting preference~~ Answered for the preview: Google Cloud Run (D21). Production database hosting is still open and is needed by Phase 3.

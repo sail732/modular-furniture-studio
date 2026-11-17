@@ -34,6 +34,8 @@
 | No photography; illustrations only | No licensed assets (business decision 12) | 5 / launch |
 | No admin: catalog changes need SQL or the seed file | Phase 5 | 5 |
 | No caching | Deliberate, see architecture | 5 / 8 |
+| Hosted preview uses a baked, per-instance database | Free and simple while read-only; see `deployment.md` | Real PostgreSQL by Phase 3 |
+| Container image build not yet run end to end | No Docker daemon where it was written; layout was simulated and tested | First Cloud Run deploy |
 | Search is substring matching | Enough for a small catalog | Revisit with catalog size |
 | About and policy pages are placeholders | Need business and legal input | Launch |
 | No CSP, rate limiting or automated accessibility scan | See `security.md`, `testing.md` | 2, 4, 8 |
