@@ -197,14 +197,18 @@ export default async function ProductPage({ params, searchParams }: Props) {
 
           <section aria-labelledby="next-heading" className="mt-8 rounded-panel bg-ink p-6 text-paper">
             <h2 id="next-heading" className="text-xl">
-              Next step: configure it
+              Make it yours
             </h2>
             <p className="mt-2 text-paper/80">
-              The configurator, where you set the exact width, rearrange bays and see a live price, is still
-              being built. Ordering opens once it is ready.
+              Set the width, rearrange the bays, and choose the finish and details. You can save your design
+              and share it. Pricing for configured designs and ordering are not available yet.
             </p>
-            <ButtonLink href="/how-it-works" variant="secondary" className="mt-4 border-paper/70 text-paper hover:bg-paper hover:text-ink">
-              See how configuring will work
+            <ButtonLink
+              href={`/configure/${product.slug}?design=${template.code}${finish ? `&finish=${finish.code}` : ""}`}
+              variant="secondary"
+              className="mt-4 border-paper/70 text-paper hover:bg-paper hover:text-ink"
+            >
+              Configure this design
             </ButtonLink>
           </section>
         </div>

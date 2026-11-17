@@ -14,21 +14,37 @@ End-to-end tests start a production server on port 3100 and need a browser (`npx
 
 | Layer | Tool | Where | Covers |
 | --- | --- | --- | --- |
-| Unit | Vitest | `src/**/*.test.ts` | Allowed-width rule (fixed steps), unit conversion and formatting, money formatting, filter parsing (including hostile input), illustration layout schema |
-| Integration | Vitest + in-memory PGlite | `tests/integration` | Migrations apply; seed is idempotent; catalog queries, filters, sorting, search; draft and hidden content never returned; database constraints reject bad rows |
-| End-to-end | Playwright, three viewports (desktop 1280, tablet 820, mobile Pixel 7) | `tests/e2e` | Browse home → category → product; search empty state; filters; design and finish selection; 404s; navigation including the mobile menu; one `h1`, a title and no horizontal overflow on key pages; `noindex` on sample catalogs |
+| Unit | Vitest | `src/**/*.test.ts` | Allowed-width rule, unit conversion and formatting, money formatting, filter parsing (including hostile input), 2D layout building |
+| Integration | Vitest + in-memory PGlite | `tests/integration` | Catalog queries and visibility; database constraints; the configuration engine against the seeded catalog; component resolution; save, reload, update, duplicate, share and ownership |
+| End-to-end | Playwright, three viewports (desktop 1280, tablet 820, mobile Pixel 7) | `tests/e2e` | Storefront browsing, search, filters, 404s, navigation; the full TV-console configuration journey including save, reload and share; invalid combinations; the API called directly |
 
 Integration tests run against real PostgreSQL semantics, so constraint and SQL behaviour is the same as production.
 
-## Last run (after the width-rule change)
+## Fixtures required by the spec
+
+In `tests/fixtures/configurations.ts`:
+
+| Fixture | Status |
+| --- | --- |
+| Valid TV console | Present, tested |
+| Valid bookshelf | Present, tested |
+| Invalid dimension | Present, tested |
+| Incompatible door/module combination | Present, tested |
+| Finish/material mismatch | Present, tested |
+| Price change between cart and order | Phase 3 to 4 |
+| Repeated payment webhook | Phase 4 |
+
+Two invariants are checked over the whole sample catalog: every template's starting arrangement is a valid configuration, and every allowed width of every template can be reached and validates.
+
+## Last run (end of Phase 2)
 
 | Check | Result |
 | --- | --- |
 | `tsc --noEmit` | pass |
 | `eslint` | pass, no warnings |
-| Vitest | 38 passed in 6 files |
+| Vitest | 75 passed in 7 files |
 | `next build` | pass |
-| Playwright | 24 passed (8 scenarios × 3 viewports) |
+| Playwright | 36 passed (12 scenarios × 3 viewports) |
 
 ## Not yet tested
 
@@ -36,7 +52,3 @@ Integration tests run against real PostgreSQL semantics, so constraint and SQL b
 - Performance budgets.
 - Real PostgreSQL server (only PGlite has been exercised).
 - Browsers other than Chrome.
-
-## Fixtures required by the spec
-
-Valid TV console and bookshelf configurations, invalid dimension, incompatible door/module, finish/material mismatch, price change between cart and order, repeated webhook. None exist yet; they arrive with Phases 2 to 4.

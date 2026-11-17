@@ -21,7 +21,7 @@ export const howItWorksSteps = [
 export const faqs = [
   {
     q: "Can I order yet?",
-    a: "Not yet. This is a preview of the catalog. The configurator and checkout are still being built.",
+    a: "Not yet. You can configure a piece, save the design and share it, but pricing for configured designs and checkout are still being built.",
   },
   {
     q: "Can I get a custom size?",

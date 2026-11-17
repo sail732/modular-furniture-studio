@@ -6,7 +6,7 @@
 
 This puts the Phase 1 storefront on a public URL at little or no cost. The sample catalog is seeded into the embedded PGlite database during the image build and shipped inside the image, so no database service is needed.
 
-**Only valid while the site is read-only.** Each container instance has its own private copy of the catalog and anything written is lost when the instance stops. From Phase 3 (carts) the service needs a real PostgreSQL database through `DATABASE_URL`. Cloud SQL has no always-free tier.
+**The baked database is not durable.** Each container instance has its own private copy, and anything written is lost when the instance stops. Since Phase 2 the configurator saves designs, so on this preview setup saved designs and share links disappear whenever an instance restarts and are not shared between instances. Treat the hosted preview as a demo only; use a real PostgreSQL database through `DATABASE_URL` for anything people rely on. Cloud SQL has no always-free tier.
 
 ### Before you start
 

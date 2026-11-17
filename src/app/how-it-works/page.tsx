@@ -40,8 +40,9 @@ export default function HowItWorksPage() {
           </p>
           <h2>What is available today</h2>
           <p>
-            You can browse designs, standard sizes, width ranges and finishes. The configurator, live pricing
-            and ordering are still being built, so nothing can be purchased yet.
+            You can browse designs, configure a piece with a live 2D preview, save your design and share it.
+            Pricing for configured designs and ordering are still being built, so nothing can be purchased
+            yet.
           </p>
         </div>
         <ButtonLink href="/shop" className="mt-10">

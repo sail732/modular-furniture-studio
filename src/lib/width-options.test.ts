@@ -37,7 +37,7 @@ describe("width options", () => {
 
   it("every sample design has its standard width among its allowed widths", () => {
     for (const product of sampleProducts) {
-      for (const template of product.templates.map(toTemplateRow)) {
+      for (const template of product.templates.map((t) => toTemplateRow(t, product))) {
         expect(isAllowedWidth(template, template.defaultWidthUm), template.code).toBe(true);
       }
     }

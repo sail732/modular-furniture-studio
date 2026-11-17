@@ -3,7 +3,7 @@
 E-commerce and configuration platform for modular, flat-pack furniture.
 The full brief is in [`PROJECT_SPEC.md`](PROJECT_SPEC.md). "Modular Furniture Studio" is a placeholder brand set in configuration.
 
-**Status: Phase 1 complete (storefront foundation).** Browsing, search, filters and product pages work against a sample catalog. There is no configurator, cart, checkout, accounts or admin yet. See [`docs/roadmap.md`](docs/roadmap.md).
+**Status: Phase 2 complete (storefront and configurator).** Browsing, search, filters, product pages and the configurator (server-validated, with a live 2D preview, saving and sharing) work against a sample catalog. There is no pricing of configured designs, cart, checkout, accounts or admin yet. See [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Quick start
 
@@ -19,6 +19,8 @@ npm run dev                     # http://localhost:3000
 Without `DATABASE_URL`, the app uses PGlite, an embedded build of PostgreSQL stored in `.data/pglite`. Set `DATABASE_URL` to use a real PostgreSQL server; the same migrations and seed run on both.
 
 PGlite allows one process at a time. Stop the dev server before running `db:migrate` or `db:seed`.
+
+After pulling changes that add a migration, run `npm run db:setup` again. Re-seeding replaces the sample catalog and clears saved designs.
 
 ## Commands
 
@@ -55,6 +57,10 @@ src/config/              Brand, policies and shared content (no hardcoded brand 
 src/lib/                 Pure helpers: units, money, illustration layout schema
 src/server/db/           Schema, connection, sample seed
 src/server/catalog/      Catalog service: filter validation and queries
+src/server/configuration/ Configuration engine, component resolution, persistence
+src/lib/configuration/   Selection, issue and rule types shared with the browser
+src/components/configurator/  Configurator UI
+src/app/api/             JSON API (configurations)
 tests/integration/       Service tests against a real (in-memory) Postgres
 tests/e2e/               Browser journeys at desktop, tablet and mobile sizes
 ```

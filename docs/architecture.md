@@ -61,7 +61,7 @@ flowchart LR
   MFG --> OBJ
 ```
 
-Solid today: storefront pages, server-rendered routes, catalog service, database. Everything marked with a phase is planned.
+Built today: storefront pages, configurator UI, route handlers, catalog and configuration services, database. Pricing, cart, orders, admin and manufacturing are planned.
 
 ## Service boundaries
 
@@ -75,7 +75,7 @@ Each service is a folder under `src/server/<name>` exposing plain async function
 | Service | Responsibility | Phase |
 | --- | --- | --- |
 | Catalog | Published categories, products, designs, materials, finishes; listing filters | 1 (done) |
-| Configuration | Validate a configuration against dimension and compatibility rules; persist it | 2 |
+| Configuration | Validate a selection against dimension and compatibility rules; resize; resolve components; save, share | 2 (done) |
 | Pricing | Deterministic price with line items, versioned | 3 |
 | Cart | Lines that reference validated configurations; revalidation | 3 |
 | Checkout / orders | Order state machine, snapshots, payment events | 4 |
@@ -87,7 +87,16 @@ Each service is a folder under `src/server/<name>` exposing plain async function
 1. A route in `src/app` awaits `getDb()` (one connection per server process).
 2. URL parameters go through `parseListingParams` (Zod). Malformed values are dropped, never passed to SQL.
 3. `src/server/catalog/queries.ts` returns typed view models containing only published, visible content.
-4. Server components render HTML. Client JavaScript is limited to the mobile menu, the filter disclosure and the active nav link.
+4. Server components render HTML. Client JavaScript is limited to the mobile menu, the filter disclosure, the active nav link and the configurator.
+
+## Request flow in the configurator
+
+1. `/configure/[slug]` loads the product's browser-safe catalog on the server and renders the configurator with a starting selection.
+2. Each change updates the 2D preview locally and posts the selection to `POST /api/configurations/validate`.
+3. The route handler checks origin, rate limit and body shape, loads the catalog and rule set, and runs the pure engine. The response is the only source of validity shown.
+4. Saving posts to `POST /api/configurations`, which validates again, resolves components and writes the configuration and its items in one transaction.
+
+API contracts are in [`configuration-engine.md`](configuration-engine.md).
 
 ## Rendering and caching
 

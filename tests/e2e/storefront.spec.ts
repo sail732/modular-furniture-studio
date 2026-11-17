@@ -12,6 +12,7 @@ const keyPages = [
   "/about",
   "/contact",
   "/legal/returns",
+  "/configurations",
 ];
 
 test("a visitor can browse from the homepage to a category and open a product", async ({ page }) => {
@@ -67,8 +68,12 @@ test("choosing a design and finish on a product page updates price and illustrat
   await page.getByRole("link", { name: "Slate", exact: true }).click();
   await expect(page).toHaveURL(/finish=FIN-PAINT-SLATE/);
   await expect(page.getByRole("img", { name: /Model C.*in Slate/ })).toBeVisible();
-  // No purchase path exists yet, and the page says so.
-  await expect(page.getByText(/configurator.*still being built/i)).toBeVisible();
+  // The configurator is offered, but no purchase path exists yet, and the page says so.
+  await expect(page.getByRole("link", { name: "Configure this design" })).toHaveAttribute(
+    "href",
+    "/configure/ledger-media-console?design=TPL-LEDGER-C&finish=FIN-PAINT-SLATE",
+  );
+  await expect(page.getByText(/ordering are not available yet/i)).toBeVisible();
   await expect(page.getByRole("button", { name: /add to cart|buy/i })).toHaveCount(0);
 });
 

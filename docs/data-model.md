@@ -9,7 +9,7 @@
 - **Sample data:** `is_sample` marks seed content. The seed replaces only those rows.
 - **Integrity:** foreign keys everywhere; CHECK constraints for prices, ranges and formats; the database rejects invalid rows even if application code is wrong.
 
-## Implemented in Phase 1
+## Implemented (Phases 1 and 2)
 
 ```mermaid
 erDiagram
@@ -17,62 +17,128 @@ erDiagram
   products ||--|{ design_templates : "offered as"
   products ||--o{ product_finishes : "available in"
   finishes ||--o{ product_finishes : ""
-  materials ||--|{ finishes : "has"
+  materials ||--|{ finishes : has
+  products ||--|{ modules : offers
+  modules ||--|{ module_widths : "made in"
+  modules ||--o{ module_components : "built from"
+  components ||--o{ module_components : ""
+  products ||--o{ product_components : "carcass recipe"
+  components ||--o{ product_components : ""
+  products ||--o{ product_accessories : "optional"
+  components ||--o{ product_accessories : ""
+  design_templates ||--|{ template_bays : "starts as"
+  modules ||--o{ template_bays : ""
+  rule_sets ||--|{ compatibility_rules : contains
+  products ||--o{ compatibility_rules : "scoped to"
+  products ||--o{ configurations : ""
+  design_templates ||--o{ configurations : "based on"
+  configurations ||--|{ configuration_items : "resolved to"
+  components ||--o{ configuration_items : ""
 
-  categories { uuid id PK
-    varchar slug UK
-    varchar name
-    int sort_order
-    bool is_visible
-    bool is_sample }
-  products { uuid id PK
-    uuid category_id FK
-    varchar slug UK
-    varchar name
-    jsonb key_features
-    enum assembly_difficulty
-    int assembly_minutes
-    varchar lead_time_note
-    enum status
-    bool is_featured
-    timestamptz published_at }
   design_templates { uuid id PK
-    uuid product_id FK
     varchar code UK
+    int version
     int base_price_cents
-    char currency
     int default_width_um
     int default_height_um
     int default_depth_um
     int min_width_um
     int max_width_um
     int width_increment_um
-    jsonb preview_layout
+    int min_bays
+    int max_bays
+    varchar default_base
+    jsonb allowed_bases
+    jsonb default_accessories
     enum status }
-  materials { uuid id PK
-    varchar code UK
-    varchar name
+  components { uuid id PK
+    varchar sku UK
+    int revision
+    enum type
+    bool is_cut_to_size
+    bool takes_finish
+    int cost_cents "private"
+    jsonb manufacturing "private"
     bool is_active }
-  finishes { uuid id PK
-    uuid material_id FK
+  modules { uuid id PK
+    uuid product_id FK
     varchar code UK
-    char swatch_hex
+    varchar type
+    varchar count_label
+    int min_count
+    int max_count
+    int default_count
+    jsonb cell_template
+    int handles_fixed
+    int handles_per_count }
+  module_components { uuid module_id PK
+    uuid component_id PK
+    int quantity_fixed
+    int quantity_per_count
+    varchar cut_to }
+  product_components { uuid product_id PK
+    uuid component_id PK
+    int quantity
+    varchar quantity_rule
+    varchar cut_to
+    varchar when_base }
+  template_bays { uuid template_id PK
+    int position PK
+    uuid module_id FK
+    int width_um
+    int count }
+  compatibility_rules { uuid id PK
+    uuid rule_set_id FK
+    varchar code
+    uuid product_id FK "null = all products"
+    jsonb definition
+    text message
+    varchar path
     bool is_active }
-  product_finishes { uuid product_id PK
-    uuid finish_id PK
-    bool is_default }
+  configurations { uuid id PK
+    varchar share_token UK
+    char owner_session_hash
+    uuid product_id FK
+    uuid template_id FK
+    int template_version
+    int rule_set_version
+    jsonb selection
+    int width_um
+    int height_um
+    int depth_um
+    timestamptz validated_at }
+  configuration_items { uuid configuration_id PK
+    int line_no PK
+    varchar source
+    int bay_index
+    uuid component_id FK
+    varchar sku
+    int component_revision
+    int quantity
+    int cut_length_um
+    varchar finish_code }
 ```
 
-Indexes: unique on every slug/code; `products(category_id, status)`; `design_templates(product_id, status)`; `finishes(material_id)`; `product_finishes(finish_id)`.
+Phase 1 tables (`categories`, `products`, `materials`, `finishes`, `product_finishes`) are unchanged.
 
-Two Phase 1 fields are deliberately temporary and will move in Phase 2:
+Constraints worth knowing:
 
-- `design_templates.preview_layout` is an illustrative bay layout. It will be derived from the template's modules.
-- Width range and increment on `design_templates` may move to `dimension_constraints` rows. Height and depth stay as fixed columns: they are not configurable (D19).
+- `design_templates_width_on_step`: the width range and standard width sit exactly on the step grid.
+- `modules_count_range`, `design_templates_bay_range`, positive-quantity and non-negative-cost checks.
+- Deleting a product cascades to its modules, templates and recipes. Components are protected (`RESTRICT`) while any recipe or saved configuration item references them.
+- `components.cost_cents` and `components.manufacturing` are private. No storefront or configurator query selects them, and a test asserts they never appear in the browser-safe catalog.
 
-A CHECK constraint (`design_templates_width_on_step`) requires `max_width - min_width` and `default_width - min_width` to be exact multiples of the increment, so every design's allowed widths are a clean list.
+What changed from Phase 1: `design_templates.preview_layout` was removed. The 2D illustration is now derived from each template's `template_bays` and the modules' `cell_template`, so catalog pictures and the configurator preview come from the same data.
+
+### Versioning in place today
+
+- `design_templates.version`, `components.revision` and `rule_sets.version` are integers recorded on every saved configuration and configuration item.
+- A saved configuration is never rewritten when the catalog changes. On reload it is revalidated and any new issues are shown.
+- Not yet: separate version rows that let an old definition be loaded, and immutable order snapshots. Those arrive with admin authoring (Phase 5) and orders (Phase 4).
 
 ## Planned model
+
+The diagram below is the target for later phases. Entities already implemented above keep their shape; version tables, carts, users, orders and manufacturing are still to come.
 
 ```mermaid
 erDiagram

@@ -13,7 +13,10 @@ const primaryLinks = [
 ];
 
 export function SiteHeader({ categories }: { categories: CategorySummary[] }) {
-  const categoryLinks = categories.map((c) => ({ href: `/shop/${c.slug}`, label: c.name }));
+  const categoryLinks = [
+    ...categories.map((c) => ({ href: `/shop/${c.slug}`, label: c.name })),
+    { href: "/configurations", label: "Saved designs" },
+  ];
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur-sm">
       <div className="page relative flex min-h-16 items-center justify-between gap-6 lg:min-h-20">

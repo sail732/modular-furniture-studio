@@ -16,7 +16,7 @@ Decisions made so far, the reason for each, and what is still open. Nothing unde
 | D8 | No testimonials, even sample ones. The reviews section says there are none yet | Invented customer voices are easy to mistake for real ones; an empty state is the honest version | Yes |
 | D9 | No newsletter signup | Spec: only with consent handling and a real backend | Yes |
 | D10 | No product structured data (JSON-LD) yet | Spec: only when accurate; the data is sample | Add at launch |
-| D11 | Product pages show no "configure" or "add to cart" button. A panel states that the configurator is not built | Spec: no fake flows, do not claim the configurator exists | Replaced in Phase 2 |
+| D11 | Product pages link to the configurator and state that pricing and ordering are not available. There is no "add to cart" | Spec: no fake flows | Cart arrives in Phase 3 |
 | D12 | Design and finish selection on product pages are links that change the URL | Works without JavaScript, shareable, server-rendered | Yes |
 | D13 | Listing filters are a GET form validated on the server | Same reasons; every filter state is a URL | Yes |
 | D14 | Pages render per request; no caching yet; Cache Components turned off | Simplicity and no stale prices before a publish event exists | Yes, Phase 5/8 |
@@ -26,6 +26,14 @@ Decisions made so far, the reason for each, and what is still open. Nothing unde
 | D18 | Node.js 22 minimum | Current LTS; required by test tooling | Yes |
 | D19 | **Width is the only customer-adjustable dimension, in fixed steps. Height and depth are fixed per design. No made-to-measure sizes in release 1.** Confirmed by the business owner on 2026-11-16 (business decision 10) | Keeps every configuration buildable from standard parts | Costly after Phase 2 |
 | D21 | First hosted preview targets Google Cloud Run, with the sample catalog baked into the image on embedded PGlite (requested by the business owner 2026-11-16) | Runs within Cloud Run's free allowance with no database service; acceptable only while the site is read-only | Yes: set `DATABASE_URL` and rebuild without the baked database |
+| D22 | Overall width is the sum of nominal bay widths; each module is made in a fixed set of widths | Follows from D19; keeps every width reachable by swapping standard parts | Costly after Phase 6 |
+| D23 | Compatibility rules are three typed kinds (`excludes`, `requires`, `count`) stored as rows, not a general expression language | Covers the spec's examples; easy to validate and to edit in an admin form later | Yes, add kinds |
+| D24 | Only valid configurations are saved. Drafts live in the browser | Spec: validate before saving; avoids storing unbuildable designs | Yes |
+| D25 | Saved designs belong to an anonymous browser session until accounts exist; only a hash of the session id is stored | Spec allows an anonymous session reference; accounts are Phase 4 | Migrate to accounts in Phase 4 |
+| D26 | Template, component and rule-set versions are integer columns recorded on saved configurations; full version rows wait for admin authoring | Nothing can publish a new version yet; avoids unused tables | Phase 5 |
+| D27 | Modules belong to one product | Simplest correct model for the sample range | Yes |
+| D28 | The configurator shows no price for a configured design, only the design's starting price, labelled as such | Pricing is Phase 3; showing a number that ignores the configuration would mislead | Phase 3 |
+| D29 | Catalog illustrations and the configurator preview are generated from the same module data | One source for what a design looks like | Yes |
 | D20 | The database rejects a design whose width range or standard width is off its step grid; `src/lib/width-options.ts` is the single definition of "allowed width" | Makes D19 a rule the system enforces, not a convention | Yes |
 
 ## Assumptions in the sample catalog

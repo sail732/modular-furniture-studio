@@ -51,7 +51,11 @@ export function SiteFooter({ categories }: { categories: CategorySummary[] }) {
         </div>
         <FooterList
           title="Shop"
-          links={[{ href: "/shop", label: "All furniture" }, ...categories.map((c) => ({ href: `/shop/${c.slug}`, label: c.name }))]}
+          links={[
+            { href: "/shop", label: "All furniture" },
+            ...categories.map((c) => ({ href: `/shop/${c.slug}`, label: c.name })),
+            { href: "/configurations", label: "Saved designs" },
+          ]}
         />
         <FooterList
           title="About"

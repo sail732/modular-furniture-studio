@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-control px-5 text-[0.95rem] font-medium transition-colors";
+  "inline-flex min-h-11 items-center justify-center rounded-control px-5 text-[0.95rem] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 const variants = {
   primary: "bg-spruce text-white hover:bg-spruce-deep",
   secondary: "border border-ink/70 text-ink hover:bg-ink hover:text-paper",

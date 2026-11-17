@@ -5,9 +5,12 @@ import {
   designTemplates,
   finishes,
   materials,
+  modules,
   productFinishes,
   products,
+  templateBays,
 } from "@/server/db/schema";
+import { buildLayout } from "@/lib/configuration/layout";
 import type { ElevationLayout } from "@/lib/elevation-layout";
 import type { ListingFilters } from "./filters";
 
@@ -182,7 +185,30 @@ async function loadTemplates(db: Database, productIds: string[]) {
     .from(designTemplates)
     .where(and(inArray(designTemplates.productId, productIds), eq(designTemplates.status, "published")))
     .orderBy(asc(designTemplates.sortOrder), asc(designTemplates.code));
+  if (rows.length === 0) return byProduct;
+  // The 2D illustration is derived from each template's starting arrangement of modules.
+  const bayRows = await db
+    .select({
+      templateId: templateBays.templateId,
+      widthUm: templateBays.widthUm,
+      count: templateBays.count,
+      cellTemplate: modules.cellTemplate,
+    })
+    .from(templateBays)
+    .innerJoin(modules, eq(modules.id, templateBays.moduleId))
+    .where(
+      inArray(
+        templateBays.templateId,
+        rows.map((t) => t.id),
+      ),
+    )
+    .orderBy(asc(templateBays.templateId), asc(templateBays.position));
+  const baysByTemplate = Map.groupBy(bayRows, (b) => b.templateId);
+
   for (const t of rows) {
+    const bays = baysByTemplate.get(t.id) ?? [];
+    // A template with no arrangement cannot be shown or configured.
+    if (bays.length === 0) continue;
     const list = byProduct.get(t.productId) ?? [];
     list.push({
       code: t.code,
@@ -196,7 +222,7 @@ async function loadTemplates(db: Database, productIds: string[]) {
       minWidthUm: t.minWidthUm,
       maxWidthUm: t.maxWidthUm,
       widthIncrementUm: t.widthIncrementUm,
-      layout: t.previewLayout,
+      layout: buildLayout(bays, t.defaultBase),
     });
     byProduct.set(t.productId, list);
   }
@@ -246,8 +272,9 @@ function selectProducts(db: Database, where: SQL[], order: SQL[], limit?: number
 async function hydrate(db: Database, rows: ProductRow[]) {
   const ids = rows.map((r) => r.id);
   const [templates, finishesByProduct] = await Promise.all([loadTemplates(db, ids), loadFinishes(db, ids)]);
-  return rows.map((r) => {
+  return rows.flatMap((r) => {
     const productTemplates = templates.get(r.id) ?? [];
+    if (productTemplates.length === 0) return [];
     const summary: ProductSummary = {
       id: r.id,
       slug: r.slug,
@@ -263,7 +290,7 @@ async function hydrate(db: Database, rows: ProductRow[]) {
       finishes: finishesByProduct.get(r.id) ?? [],
       isSample: r.isSample,
     };
-    return { row: r, summary, templates: productTemplates };
+    return [{ row: r, summary, templates: productTemplates }];
   });
 }
 

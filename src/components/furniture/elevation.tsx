@@ -17,6 +17,8 @@ interface ElevationProps {
   label: string;
   showDimensions?: boolean;
   animate?: boolean;
+  /** Index of a bay to outline, e.g. the one being edited. */
+  highlightBay?: number | null;
   className?: string;
 }
 
@@ -76,6 +78,7 @@ export function Elevation({
   label,
   showDimensions = false,
   animate = false,
+  highlightBay = null,
   className,
 }: ElevationProps) {
   const widthIn = widthUm / UM_PER_INCH;
@@ -256,6 +259,21 @@ export function Elevation({
         [x0 + legInset, x0 + w - legInset - legW].map((lx) => (
           <rect key={lx} x={lx} y={bodyBottom} width={legW} height={baseH} fill="var(--color-ink)" opacity={0.78} />
         ))}
+
+      {highlightBay !== null && geometry[highlightBay] ? (
+        <rect
+          x={geometry[highlightBay].x - t / 2}
+          y={y0 - 3}
+          width={geometry[highlightBay].w + t}
+          height={bodyH + 6}
+          fill="none"
+          stroke="var(--color-spruce)"
+          strokeWidth={2.5}
+          strokeDasharray="5 3"
+          vectorEffect="non-scaling-stroke"
+          rx={2}
+        />
+      ) : null}
 
       {showDimensions && (
         <g aria-hidden="true">
