@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modular Furniture Studio
 
-## Getting Started
+E-commerce and configuration platform for modular, flat-pack furniture.
+The full brief is in [`PROJECT_SPEC.md`](PROJECT_SPEC.md). "Modular Furniture Studio" is a placeholder brand set in configuration.
 
-First, run the development server:
+**Status: Phase 1 complete (storefront foundation).** Browsing, search, filters and product pages work against a sample catalog. There is no configurator, cart, checkout, accounts or admin yet. See [`docs/roadmap.md`](docs/roadmap.md).
+
+## Quick start
+
+Requires Node.js 22 or newer. No database install is needed for local development.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local      # Windows PowerShell: Copy-Item .env.example .env.local
+npm run db:setup                # apply migrations and load the sample catalog
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `DATABASE_URL`, the app uses PGlite, an embedded build of PostgreSQL stored in `.data/pglite`. Set `DATABASE_URL` to use a real PostgreSQL server; the same migrations and seed run on both.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+PGlite allows one process at a time. Stop the dev server before running `db:migrate` or `db:seed`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Commands
 
-## Learn More
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` / `npm run start` | Production build and server |
+| `npm run typecheck` | TypeScript, no emit |
+| `npm run lint` | ESLint |
+| `npm test` | Unit and integration tests (Vitest, in-memory PGlite) |
+| `npm run test:e2e` | End-to-end tests (Playwright) against a production build; run `npm run build` and `npm run db:setup` first |
+| `npm run check` | Type check, lint and unit/integration tests |
+| `npm run db:generate` | Generate a SQL migration from `src/server/db/schema.ts` |
+| `npm run db:migrate` | Apply migrations |
+| `npm run db:seed` | Replace sample catalog content (rows flagged `is_sample`) |
+| `npm run db:setup` | Migrate, then seed |
 
-To learn more about Next.js, take a look at the following resources:
+Playwright needs a browser: `npx playwright install chromium`, or set `PW_CHANNEL=chrome` to use an installed Chrome.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+PROJECT_SPEC.md          Master specification
+docs/                    Architecture, data model, decisions, roadmap
+drizzle/                 SQL migrations (generated, committed)
+scripts/                 migrate and seed entry points
+src/app/                 Routes (Next.js App Router), server-rendered
+src/components/          Presentation only: layout, catalog, furniture, ui
+src/config/              Brand, policies and shared content (no hardcoded brand in pages)
+src/lib/                 Pure helpers: units, money, illustration layout schema
+src/server/db/           Schema, connection, sample seed
+src/server/catalog/      Catalog service: filter validation and queries
+tests/integration/       Service tests against a real (in-memory) Postgres
+tests/e2e/               Browser journeys at desktop, tablet and mobile sizes
+```
 
-## Deploy on Vercel
+Business logic lives in `src/server` and `src/lib`. Components receive data and render it.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Start with [`docs/assumptions-and-decisions.md`](docs/assumptions-and-decisions.md) (what was decided, and what the business still has to decide) and [`docs/roadmap.md`](docs/roadmap.md).

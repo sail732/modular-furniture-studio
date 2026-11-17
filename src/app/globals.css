@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens. Components use these names only; no raw hex values in JSX
+ * except finish colours that come from catalog data.
+ */
+@theme {
+  /* Colour */
+  --color-paper: #eef0eb;
+  --color-surface: #f8f9f6;
+  --color-ink: #1b2a2b;
+  --color-ink-soft: #52605d;
+  --color-line: #c7cec6;
+  --color-line-soft: #dde2db;
+  --color-spruce: #24554a;
+  --color-spruce-deep: #183d35;
+  --color-signal: #f0cf68;
+  --color-danger: #9b2c1f;
+
+  /* Typography */
+  --font-display: "Bricolage Grotesque Variable", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Instrument Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-display: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+  --text-display--line-height: 0.98;
+  --text-title: clamp(1.75rem, 1.35rem + 1.6vw, 2.625rem);
+  --text-title--line-height: 1.08;
+
+  /* Shape and depth */
+  --radius-panel: 3px;
+  --radius-control: 6px;
+  --shadow-lift: 0 1px 0 rgb(27 42 43 / 0.05), 0 14px 28px -18px rgb(27 42 43 / 0.35);
+
+  /* Layout */
+  --container-page: 80rem;
+  --container-prose: 42rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    font-size: 1rem;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-spruce);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .page {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  }
+
+  .prose-block > * + * {
+    margin-top: 1em;
+  }
+  .prose-block {
+    max-width: var(--container-prose);
+  }
+  .prose-block h2 {
+    font-size: 1.5rem;
+    margin-top: 2.25em;
+  }
+  .prose-block ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .prose-block li + li {
+    margin-top: 0.4em;
+  }
+  .prose-block a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* The one orchestrated motion on the site: bays of the hero drawing set down in turn. */
+  .bay-in {
+    animation: bay-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes bay-in {
+    from {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-line-soft), var(--color-surface), var(--color-line-soft));
+    background-size: 200% 100%;
+    animation: skeleton 1.4s ease-in-out infinite;
+    border-radius: var(--radius-panel);
+  }
+  @keyframes skeleton {
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
