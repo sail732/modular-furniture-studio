@@ -18,7 +18,7 @@ This puts the Phase 1 storefront on a public URL at little or no cost. The sampl
 From the project folder:
 
 ```
-gcloud run deploy modular-furniture-studio --source . --region us-east1 --allow-unauthenticated --memory 1Gi --cpu 1 --min-instances 0 --max-instances 2
+gcloud run deploy modular-furniture-studio --source . --region us-east1 --allow-unauthenticated --memory 1Gi --cpu 1 --min-instances 0 --max-instances 1
 ```
 
 `gcloud` asks to enable the Cloud Run, Cloud Build and Artifact Registry APIs the first time; answer yes. It builds the `Dockerfile` in Cloud Build and prints the service URL when done.
@@ -37,7 +37,7 @@ Optional brand settings use the same flag, for example `--update-env-vars SITE_N
 | --- | --- |
 | `--memory 1Gi` | The server used about 450 MB under a burst of 300 concurrent requests in testing; the 512 MB default is too tight |
 | `--min-instances 0` | Scales to zero when idle, so idle time costs nothing. The first request after idle takes a few seconds |
-| `--max-instances 2` | Caps spend if the URL gets unexpected traffic |
+| `--max-instances 1` | Caps spend, and keeps one copy of the baked database so a share link always reaches the instance that saved it. Raise it only after switching to a real database |
 | `--allow-unauthenticated` | Makes the site public. Omit it to keep the preview private to your Google account |
 
 ### Cost notes
